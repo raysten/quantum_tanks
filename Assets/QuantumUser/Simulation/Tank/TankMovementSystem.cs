@@ -1,3 +1,4 @@
+using Photon.Deterministic;
 using UnityEngine.Scripting;
 
 namespace Quantum
@@ -12,9 +13,26 @@ namespace Quantum
             public PhysicsBody3D* Body;
         }
 
+        private FP _moveSpeed = FP._0_02;
+
         public override void Update(Frame frame, ref Filter filter)
         {
-            // filter.Body->AddForce(filter.Transform->Up);
+            var input = frame.GetPlayerInput(0);
+            
+            UpdateMovement(frame, filter, input);
+        }
+
+        private void UpdateMovement(Frame frame, Filter filter, Input* input)
+        {
+            if (input->Right)
+            {
+                filter.Transform->Position += filter.Transform->Right * _moveSpeed;
+            }
+            
+            if (input->Left)
+            {
+                filter.Transform->Position += filter.Transform->Left * _moveSpeed;
+            }
         }
     }
 }
