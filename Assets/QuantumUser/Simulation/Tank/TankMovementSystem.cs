@@ -10,7 +10,6 @@ namespace Quantum
         {
             public EntityRef Entity;
             public Transform3D* Transform;
-            public PhysicsBody3D* Body;
         }
 
         private FP _moveSpeed = FP._0_02;
@@ -18,7 +17,7 @@ namespace Quantum
         public override void Update(Frame frame, ref Filter filter)
         {
             var input = frame.GetPlayerInput(0);
-            
+
             UpdateMovement(frame, filter, input);
         }
 
@@ -26,12 +25,12 @@ namespace Quantum
         {
             if (input->Right)
             {
-                filter.Transform->Position += filter.Transform->Right * _moveSpeed;
+                filter.Transform->Position += FPVector3.Right * _moveSpeed;
             }
-            
+
             if (input->Left)
             {
-                filter.Transform->Position += filter.Transform->Left * _moveSpeed;
+                filter.Transform->Position += FPVector3.Left * _moveSpeed;
             }
         }
     }
