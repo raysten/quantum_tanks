@@ -13,6 +13,13 @@ namespace Quantum
 
             var playerLink = new PlayerLink { PlayerRef = player};
             frame.Add(tankEntity, playerLink);
+            
+            if (frame.Unsafe.TryGetPointer(tankEntity, out Tank* tank))
+            {
+                var rotatorPrototypeAsset = tank->Rotator;
+                var rotatorEntity = frame.Create(rotatorPrototypeAsset);
+                frame.Add(rotatorEntity, playerLink);
+            }
         }
     }
 }

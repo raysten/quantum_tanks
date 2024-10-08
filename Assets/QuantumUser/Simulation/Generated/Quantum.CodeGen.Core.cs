@@ -548,6 +548,24 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct Tank : Quantum.IComponent {
+    public const Int32 SIZE = 8;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(0)]
+    public AssetRef<EntityPrototype> Rotator;
+    public override Int32 GetHashCode() {
+      unchecked { 
+        var hash = 16087;
+        hash = hash * 31 + Rotator.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (Tank*)ptr;
+        AssetRef.Serialize(&p->Rotator, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct TankRotator : Quantum.IComponent {
     public const Int32 SIZE = 4;
     public const Int32 ALIGNMENT = 4;
@@ -611,6 +629,8 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<PhysicsJoints3D>();
       BuildSignalsArrayOnComponentAdded<Quantum.PlayerLink>();
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerLink>();
+      BuildSignalsArrayOnComponentAdded<Quantum.Tank>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.Tank>();
       BuildSignalsArrayOnComponentAdded<Quantum.TankRotator>();
       BuildSignalsArrayOnComponentRemoved<Quantum.TankRotator>();
       BuildSignalsArrayOnComponentAdded<Transform2D>();
@@ -726,6 +746,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(Shape3D), Shape3D.SIZE);
       typeRegistry.Register(typeof(SpringJoint), SpringJoint.SIZE);
       typeRegistry.Register(typeof(SpringJoint3D), SpringJoint3D.SIZE);
+      typeRegistry.Register(typeof(Quantum.Tank), Quantum.Tank.SIZE);
       typeRegistry.Register(typeof(Quantum.TankRotator), Quantum.TankRotator.SIZE);
       typeRegistry.Register(typeof(Transform2D), Transform2D.SIZE);
       typeRegistry.Register(typeof(Transform2DVertical), Transform2DVertical.SIZE);
@@ -734,9 +755,10 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum._globals_), Quantum._globals_.SIZE);
     }
     static partial void InitComponentTypeIdGen() {
-      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 2)
+      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 3)
         .AddBuiltInComponents()
         .Add<Quantum.PlayerLink>(Quantum.PlayerLink.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.Tank>(Quantum.Tank.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.TankRotator>(Quantum.TankRotator.Serialize, null, null, ComponentFlags.None)
         .Finish();
     }
