@@ -1,4 +1,5 @@
 ﻿using Photon.Deterministic;
+using UnityEngine;
 using UnityEngine.Scripting;
 
 namespace Quantum
@@ -42,6 +43,19 @@ namespace Quantum
 
             var body = frame.Unsafe.GetPointer<PhysicsBody3D>(bulletEntity);
             body->AddForce(ownerTransform->Up * config.Force);
+        }
+
+        public void OnCollisionBulletHitTank(Frame frame, CollisionInfo3D collisionInfo, Bullet* bullet, Tank* tank)
+        {
+            Debug.LogError("bullethittank");
+            if (bullet->Owner == collisionInfo.Other)
+            {
+                collisionInfo.IgnoreCollision = true;
+            }
+            else
+            {
+                frame.Destroy(collisionInfo.Entity);
+            }
         }
     }
 }

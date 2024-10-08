@@ -625,12 +625,16 @@ namespace Quantum {
         FP.Serialize(&p->FireInterval, serializer);
     }
   }
+  public unsafe partial interface ISignalOnCollisionBulletHitTank : ISignal {
+    void OnCollisionBulletHitTank(Frame f, TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank);
+  }
   public unsafe partial interface ISignalShoot : ISignal {
     void Shoot(Frame f, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype);
   }
   public static unsafe partial class Constants {
   }
   public unsafe partial class Frame {
+    private ISignalOnCollisionBulletHitTank[] _ISignalOnCollisionBulletHitTankSystems;
     private ISignalShoot[] _ISignalShootSystems;
     partial void AllocGen() {
       _globals = (_globals_*)Context.Allocator.AllocAndClear(sizeof(_globals_));
@@ -643,6 +647,7 @@ namespace Quantum {
     }
     partial void InitGen() {
       Initialize(this, this.SimulationConfig.Entities, 256);
+      _ISignalOnCollisionBulletHitTankSystems = BuildSignalsArray<ISignalOnCollisionBulletHitTank>();
       _ISignalShootSystems = BuildSignalsArray<ISignalShoot>();
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
@@ -718,6 +723,15 @@ namespace Quantum {
       Physics3D.Init(_globals->PhysicsState3D.MapStaticCollidersState.TrackedMap);
     }
     public unsafe partial struct FrameSignals {
+      public void OnCollisionBulletHitTank(TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank) {
+        var array = _f._ISignalOnCollisionBulletHitTankSystems;
+        for (Int32 i = 0; i < array.Length; ++i) {
+          var s = array[i];
+          if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
+            s.OnCollisionBulletHitTank(_f, collisionInfo, bullet, tank);
+          }
+        }
+      }
       public void Shoot(EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype) {
         var array = _f._ISignalShootSystems;
         for (Int32 i = 0; i < array.Length; ++i) {
