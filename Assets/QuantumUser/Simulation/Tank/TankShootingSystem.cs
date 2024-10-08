@@ -20,8 +20,10 @@ namespace Quantum
             var input = frame.GetPlayerInput(0);
 
             UpdateRotation(frame, filter, input);
+            UpdateShooting(frame, filter, input);
         }
 
+        // @todo: extract rotator to another class
         private void UpdateRotation(Frame frame, Filter filter, Input* input)
         {
             if (input->Up)
@@ -32,6 +34,24 @@ namespace Quantum
             if (input->Down)
             {
                 filter.Transform->Rotate(0, 0, _rotationSpeed * -1);
+            }
+        }
+
+        private void UpdateShooting(Frame frame, Filter filter, Input* input)
+        {
+            var tankConfig = frame.FindAsset(frame.RuntimeConfig.TankConfig);
+
+            if (input->Fire && filter.Rotator->FireInterval <= 0)
+            {
+                // @todo: rename rotator to gun?
+                filter.Rotator->FireInterval = tankConfig.FireInterval;
+                var relativeOffset = FPVector3.Up * tankConfig.ShootingOffset;
+                var spawnPosition = filter.Transform->TransformPoint(relativeOffset);
+                frame.Signals.TankShoot(filter.Entity, spawnPosition, tankConfig.BulletPrototype);
+            }
+            else
+            {
+                filter.Rotator->FireInterval -= frame.DeltaTime;
             }
         }
     }

@@ -530,6 +530,32 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct Bullet : Quantum.IComponent {
+    public const Int32 SIZE = 24;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(16)]
+    public FP TimeToLive;
+    [FieldOffset(8)]
+    public EntityRef Owner;
+    [FieldOffset(0)]
+    public AssetRef<BulletConfig> Config;
+    public override Int32 GetHashCode() {
+      unchecked { 
+        var hash = 18307;
+        hash = hash * 31 + TimeToLive.GetHashCode();
+        hash = hash * 31 + Owner.GetHashCode();
+        hash = hash * 31 + Config.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (Bullet*)ptr;
+        AssetRef.Serialize(&p->Config, serializer);
+        EntityRef.Serialize(&p->Owner, serializer);
+        FP.Serialize(&p->TimeToLive, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct PlayerLink : Quantum.IComponent {
     public const Int32 SIZE = 4;
     public const Int32 ALIGNMENT = 4;
@@ -566,24 +592,46 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
-  public unsafe partial struct TankRotator : Quantum.IComponent {
+  public unsafe partial struct TankMovement : Quantum.IComponent {
     public const Int32 SIZE = 4;
     public const Int32 ALIGNMENT = 4;
     [FieldOffset(0)]
     private fixed Byte _alignment_padding_[4];
     public override Int32 GetHashCode() {
       unchecked { 
+        var hash = 7297;
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (TankMovement*)ptr;
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct TankRotator : Quantum.IComponent {
+    public const Int32 SIZE = 8;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(0)]
+    public FP FireInterval;
+    public override Int32 GetHashCode() {
+      unchecked { 
         var hash = 16339;
+        hash = hash * 31 + FireInterval.GetHashCode();
         return hash;
       }
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (TankRotator*)ptr;
+        FP.Serialize(&p->FireInterval, serializer);
     }
+  }
+  public unsafe partial interface ISignalTankShoot : ISignal {
+    void TankShoot(Frame f, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype);
   }
   public static unsafe partial class Constants {
   }
   public unsafe partial class Frame {
+    private ISignalTankShoot[] _ISignalTankShootSystems;
     partial void AllocGen() {
       _globals = (_globals_*)Context.Allocator.AllocAndClear(sizeof(_globals_));
     }
@@ -595,8 +643,11 @@ namespace Quantum {
     }
     partial void InitGen() {
       Initialize(this, this.SimulationConfig.Entities, 256);
+      _ISignalTankShootSystems = BuildSignalsArray<ISignalTankShoot>();
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
+      BuildSignalsArrayOnComponentAdded<Quantum.Bullet>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.Bullet>();
       BuildSignalsArrayOnComponentAdded<CharacterController2D>();
       BuildSignalsArrayOnComponentRemoved<CharacterController2D>();
       BuildSignalsArrayOnComponentAdded<CharacterController3D>();
@@ -631,6 +682,8 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerLink>();
       BuildSignalsArrayOnComponentAdded<Quantum.Tank>();
       BuildSignalsArrayOnComponentRemoved<Quantum.Tank>();
+      BuildSignalsArrayOnComponentAdded<Quantum.TankMovement>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.TankMovement>();
       BuildSignalsArrayOnComponentAdded<Quantum.TankRotator>();
       BuildSignalsArrayOnComponentRemoved<Quantum.TankRotator>();
       BuildSignalsArrayOnComponentAdded<Transform2D>();
@@ -665,6 +718,15 @@ namespace Quantum {
       Physics3D.Init(_globals->PhysicsState3D.MapStaticCollidersState.TrackedMap);
     }
     public unsafe partial struct FrameSignals {
+      public void TankShoot(EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype) {
+        var array = _f._ISignalTankShootSystems;
+        for (Int32 i = 0; i < array.Length; ++i) {
+          var s = array[i];
+          if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
+            s.TankShoot(_f, owner, spawnPosition, bulletPrototype);
+          }
+        }
+      }
     }
   }
   public unsafe partial class Statics {
@@ -682,6 +744,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum.BitSet4096), Quantum.BitSet4096.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet512), Quantum.BitSet512.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet6), Quantum.BitSet6.SIZE);
+      typeRegistry.Register(typeof(Quantum.Bullet), Quantum.Bullet.SIZE);
       typeRegistry.Register(typeof(Button), Button.SIZE);
       typeRegistry.Register(typeof(CallbackFlags), 4);
       typeRegistry.Register(typeof(CharacterController2D), CharacterController2D.SIZE);
@@ -747,6 +810,7 @@ namespace Quantum {
       typeRegistry.Register(typeof(SpringJoint), SpringJoint.SIZE);
       typeRegistry.Register(typeof(SpringJoint3D), SpringJoint3D.SIZE);
       typeRegistry.Register(typeof(Quantum.Tank), Quantum.Tank.SIZE);
+      typeRegistry.Register(typeof(Quantum.TankMovement), Quantum.TankMovement.SIZE);
       typeRegistry.Register(typeof(Quantum.TankRotator), Quantum.TankRotator.SIZE);
       typeRegistry.Register(typeof(Transform2D), Transform2D.SIZE);
       typeRegistry.Register(typeof(Transform2DVertical), Transform2DVertical.SIZE);
@@ -755,10 +819,12 @@ namespace Quantum {
       typeRegistry.Register(typeof(Quantum._globals_), Quantum._globals_.SIZE);
     }
     static partial void InitComponentTypeIdGen() {
-      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 3)
+      ComponentTypeId.Reset(ComponentTypeId.BuiltInComponentCount + 5)
         .AddBuiltInComponents()
+        .Add<Quantum.Bullet>(Quantum.Bullet.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerLink>(Quantum.PlayerLink.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.Tank>(Quantum.Tank.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.TankMovement>(Quantum.TankMovement.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.TankRotator>(Quantum.TankRotator.Serialize, null, null, ComponentFlags.None)
         .Finish();
     }

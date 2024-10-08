@@ -50,6 +50,23 @@ namespace Quantum.Prototypes {
   #endif //;
   
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.Bullet))]
+  public unsafe class BulletPrototype : ComponentPrototype<Quantum.Bullet> {
+    public FP TimeToLive;
+    public MapEntityId Owner;
+    public AssetRef<BulletConfig> Config;
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.Bullet component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.Bullet result, in PrototypeMaterializationContext context = default) {
+        result.TimeToLive = this.TimeToLive;
+        PrototypeValidator.FindMapEntity(this.Owner, in context, out result.Owner);
+        result.Config = this.Config;
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.Input))]
   public unsafe partial class InputPrototype : StructPrototype {
     public Button Left;
@@ -98,10 +115,24 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
-  [Quantum.Prototypes.Prototype(typeof(Quantum.TankRotator))]
-  public unsafe partial class TankRotatorPrototype : ComponentPrototype<Quantum.TankRotator> {
+  [Quantum.Prototypes.Prototype(typeof(Quantum.TankMovement))]
+  public unsafe partial class TankMovementPrototype : ComponentPrototype<Quantum.TankMovement> {
     [HideInInspector()]
     public Int32 _empty_prototype_dummy_field_;
+    partial void MaterializeUser(Frame frame, ref Quantum.TankMovement result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.TankMovement component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.TankMovement result, in PrototypeMaterializationContext context = default) {
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.TankRotator))]
+  public unsafe partial class TankRotatorPrototype : ComponentPrototype<Quantum.TankRotator> {
+    public FP FireInterval;
     partial void MaterializeUser(Frame frame, ref Quantum.TankRotator result, in PrototypeMaterializationContext context);
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.TankRotator component = default;
@@ -109,6 +140,7 @@ namespace Quantum.Prototypes {
         return f.Set(entity, component) == SetResult.ComponentAdded;
     }
     public void Materialize(Frame frame, ref Quantum.TankRotator result, in PrototypeMaterializationContext context = default) {
+        result.FireInterval = this.FireInterval;
         MaterializeUser(frame, ref result, in context);
     }
   }

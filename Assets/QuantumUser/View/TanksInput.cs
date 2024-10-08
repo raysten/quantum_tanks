@@ -19,6 +19,7 @@ public class TanksInput : MonoBehaviour
         quantumInput.Right = UnityInput.GetKey(KeyCode.D) || UnityInput.GetKey(KeyCode.RightArrow);
         quantumInput.Up = UnityInput.GetKey(KeyCode.W) || UnityInput.GetKey(KeyCode.UpArrow);
         quantumInput.Down = UnityInput.GetKey(KeyCode.S) || UnityInput.GetKey(KeyCode.DownArrow);
+        quantumInput.Fire = UnityInput.GetKey(KeyCode.Space);
         
         callback.SetInput(quantumInput, DeterministicInputFlags.Repeatable);
     }

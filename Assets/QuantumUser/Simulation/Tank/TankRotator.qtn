@@ -1,3 +1,6 @@
 component TankRotator
 {
+    FP FireInterval;
 }
+
+signal TankShoot(EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype);

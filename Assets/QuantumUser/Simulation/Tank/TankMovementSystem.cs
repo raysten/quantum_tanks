@@ -10,6 +10,7 @@ namespace Quantum
         {
             public EntityRef Entity;
             public Transform3D* Transform;
+            public TankMovement* MovementTag;
         }
 
         public override void Update(Frame frame, ref Filter filter)
@@ -27,7 +28,7 @@ namespace Quantum
         private void UpdateMovement(Frame frame, Filter filter, Input* input)
         {
             var config = frame.FindAsset(frame.RuntimeConfig.TankConfig);
-            var moveSpeed = config.moveSpeed;
+            var moveSpeed = config.MoveSpeed;
             
             if (input->Right)
             {

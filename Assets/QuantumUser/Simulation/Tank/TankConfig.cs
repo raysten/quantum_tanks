@@ -4,8 +4,9 @@ namespace Quantum
 {
     public class TankConfig : AssetObject
     {
-        public FP moveSpeed = FP._0_02;
-        public FP fireInterval = FP._0_10;
-        public AssetRef<EntityPrototype> bulletPrototype;
+        public FP MoveSpeed = FP._0_02;
+        public FP FireInterval = FP._0_10;
+        public FP ShootingOffset = FP._0_50;
+        public AssetRef<EntityPrototype> BulletPrototype;
     }
 }

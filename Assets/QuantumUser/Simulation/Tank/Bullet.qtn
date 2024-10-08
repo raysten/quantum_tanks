@@ -1,0 +1,6 @@
+component Bullet
+{
+    FP TimeToLive;
+    EntityRef Owner;
+    AssetRef<BulletConfig> Config;
+}
