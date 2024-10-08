@@ -552,17 +552,17 @@ namespace Quantum {
     public const Int32 SIZE = 8;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
-    public AssetRef<EntityPrototype> Rotator;
+    public AssetRef<EntityPrototype> RotatorPrototype;
     public override Int32 GetHashCode() {
       unchecked { 
         var hash = 16087;
-        hash = hash * 31 + Rotator.GetHashCode();
+        hash = hash * 31 + RotatorPrototype.GetHashCode();
         return hash;
       }
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (Tank*)ptr;
-        AssetRef.Serialize(&p->Rotator, serializer);
+        AssetRef.Serialize(&p->RotatorPrototype, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]

@@ -16,7 +16,7 @@ namespace Quantum
             
             if (frame.Unsafe.TryGetPointer(tankEntity, out Tank* tank))
             {
-                var rotatorPrototypeAsset = tank->Rotator;
+                var rotatorPrototypeAsset = tank->RotatorPrototype;
                 var rotatorEntity = frame.Create(rotatorPrototypeAsset);
                 frame.Add(rotatorEntity, playerLink);
             }

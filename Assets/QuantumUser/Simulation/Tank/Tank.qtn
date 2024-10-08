@@ -1,4 +1,4 @@
 component Tank
 {
-    AssetRef<EntityPrototype> Rotator;
+    AssetRef<EntityPrototype> RotatorPrototype;
 }

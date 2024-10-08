@@ -12,8 +12,6 @@ namespace Quantum
             public Transform3D* Transform;
         }
 
-        private FP _moveSpeed = FP._0_02;
-
         public override void Update(Frame frame, ref Filter filter)
         {
             Input* input = default;
@@ -28,14 +26,17 @@ namespace Quantum
 
         private void UpdateMovement(Frame frame, Filter filter, Input* input)
         {
+            var config = frame.FindAsset(frame.RuntimeConfig.TankConfig);
+            var moveSpeed = config.moveSpeed;
+            
             if (input->Right)
             {
-                filter.Transform->Position += FPVector3.Right * _moveSpeed;
+                filter.Transform->Position += FPVector3.Right * moveSpeed;
             }
 
             if (input->Left)
             {
-                filter.Transform->Position += FPVector3.Left * _moveSpeed;
+                filter.Transform->Position += FPVector3.Left * moveSpeed;
             }
         }
     }
