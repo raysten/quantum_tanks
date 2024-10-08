@@ -4,9 +4,30 @@ using UnityEngine.Scripting;
 namespace Quantum
 {
     [Preserve]
-    public unsafe class TankBulletSystem : SystemSignalsOnly, ISignalTankShoot
+    public unsafe class TankBulletSystem : SystemMainThreadFilter<TankBulletSystem.Filter>, ISignalShoot
     {
-        public void TankShoot(Frame frame, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype)
+        public struct Filter
+        {
+            public EntityRef Entity;
+            public Bullet* Bullet;
+        }
+
+        public override void Update(Frame frame, ref Filter filter)
+        {
+            UpdateTimeToLive(frame, filter);
+        }
+
+        private static void UpdateTimeToLive(Frame frame, Filter filter)
+        {
+            filter.Bullet->TimeToLive -= frame.DeltaTime;
+
+            if (filter.Bullet->TimeToLive <= 0)
+            {
+                frame.Destroy(filter.Entity);
+            }
+        }
+
+        public void Shoot(Frame frame, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype)
         {
             var bulletEntity = frame.Create(bulletPrototype);
             var bulletTransform = frame.Unsafe.GetPointer<Transform3D>(bulletEntity);

@@ -625,13 +625,13 @@ namespace Quantum {
         FP.Serialize(&p->FireInterval, serializer);
     }
   }
-  public unsafe partial interface ISignalTankShoot : ISignal {
-    void TankShoot(Frame f, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype);
+  public unsafe partial interface ISignalShoot : ISignal {
+    void Shoot(Frame f, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype);
   }
   public static unsafe partial class Constants {
   }
   public unsafe partial class Frame {
-    private ISignalTankShoot[] _ISignalTankShootSystems;
+    private ISignalShoot[] _ISignalShootSystems;
     partial void AllocGen() {
       _globals = (_globals_*)Context.Allocator.AllocAndClear(sizeof(_globals_));
     }
@@ -643,7 +643,7 @@ namespace Quantum {
     }
     partial void InitGen() {
       Initialize(this, this.SimulationConfig.Entities, 256);
-      _ISignalTankShootSystems = BuildSignalsArray<ISignalTankShoot>();
+      _ISignalShootSystems = BuildSignalsArray<ISignalShoot>();
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       BuildSignalsArrayOnComponentAdded<Quantum.Bullet>();
@@ -718,12 +718,12 @@ namespace Quantum {
       Physics3D.Init(_globals->PhysicsState3D.MapStaticCollidersState.TrackedMap);
     }
     public unsafe partial struct FrameSignals {
-      public void TankShoot(EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype) {
-        var array = _f._ISignalTankShootSystems;
+      public void Shoot(EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype) {
+        var array = _f._ISignalShootSystems;
         for (Int32 i = 0; i < array.Length; ++i) {
           var s = array[i];
           if (_f.SystemIsEnabledInHierarchy((SystemBase)s)) {
-            s.TankShoot(_f, owner, spawnPosition, bulletPrototype);
+            s.Shoot(_f, owner, spawnPosition, bulletPrototype);
           }
         }
       }

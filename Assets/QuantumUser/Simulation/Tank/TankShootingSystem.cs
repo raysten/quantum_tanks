@@ -47,7 +47,7 @@ namespace Quantum
                 filter.Rotator->FireInterval = tankConfig.FireInterval;
                 var relativeOffset = FPVector3.Up * tankConfig.ShootingOffset;
                 var spawnPosition = filter.Transform->TransformPoint(relativeOffset);
-                frame.Signals.TankShoot(filter.Entity, spawnPosition, tankConfig.BulletPrototype);
+                frame.Signals.Shoot(filter.Entity, spawnPosition, tankConfig.BulletPrototype);
             }
             else
             {
