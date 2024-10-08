@@ -45,19 +45,15 @@ namespace Quantum
             body->AddForce(ownerTransform->Up * config.Force);
         }
 
-        // @todo: Assign tankRotator to tank and use just tank?
         public void OnCollisionBulletHitTank(Frame frame, TriggerInfo3D collisionInfo, Bullet* bullet, TankRotator* tankRotator)
         {
-            // Debug.LogError($"other: {collisionInfo.Other.ToString()}, entity: {collisionInfo.Entity.ToString()}");
-            // Debug.LogError($"bullet owner: {bullet->Owner.ToString()}");
-
             if (bullet->Owner == collisionInfo.Other)
             {
                 collisionInfo.IgnoreTrigger = true;
             }
             else
             {
-                frame.Destroy(collisionInfo.Other);
+                // @todo: change score
             }
         }
     }
