@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Scripting;
+﻿using UnityEngine.Scripting;
 
 namespace Quantum
 {
@@ -10,10 +9,9 @@ namespace Quantum
         {
             if (frame.Unsafe.TryGetPointer<Bullet>(info.Entity, out var bullet))
             {
-                if (frame.Unsafe.TryGetPointer<Tank>(info.Other, out var tank))
+                if (frame.Unsafe.TryGetPointer<TankRotator>(info.Other, out var tankRotator))
                 {
-                    // Debug.LogError("trigger collision");
-                    frame.Signals.OnCollisionBulletHitTank(info, bullet, tank);
+                    frame.Signals.OnCollisionBulletHitTank(info, bullet, tankRotator);
                 }
             }
         }

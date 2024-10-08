@@ -1,1 +1,1 @@
-signal OnCollisionBulletHitTank(TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank);
+signal OnCollisionBulletHitTank(TriggerInfo3D collisionInfo, Bullet* bullet, TankRotator* tank);

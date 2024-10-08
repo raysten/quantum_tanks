@@ -5,7 +5,7 @@ using UnityEngine.Scripting;
 namespace Quantum
 {
     [Preserve]
-    public unsafe class TankBulletSystem : SystemMainThreadFilter<TankBulletSystem.Filter>, ISignalShoot
+    public unsafe class TankBulletSystem : SystemMainThreadFilter<TankBulletSystem.Filter>, ISignalShoot, ISignalOnCollisionBulletHitTank
     {
         public struct Filter
         {
@@ -45,16 +45,19 @@ namespace Quantum
             body->AddForce(ownerTransform->Up * config.Force);
         }
 
-        public void OnCollisionBulletHitTank(Frame frame, CollisionInfo3D collisionInfo, Bullet* bullet, Tank* tank)
+        // @todo: Assign tankRotator to tank and use just tank?
+        public void OnCollisionBulletHitTank(Frame frame, TriggerInfo3D collisionInfo, Bullet* bullet, TankRotator* tankRotator)
         {
-            Debug.LogError("bullethittank");
+            // Debug.LogError($"other: {collisionInfo.Other.ToString()}, entity: {collisionInfo.Entity.ToString()}");
+            // Debug.LogError($"bullet owner: {bullet->Owner.ToString()}");
+
             if (bullet->Owner == collisionInfo.Other)
             {
-                collisionInfo.IgnoreCollision = true;
+                collisionInfo.IgnoreTrigger = true;
             }
             else
             {
-                frame.Destroy(collisionInfo.Entity);
+                frame.Destroy(collisionInfo.Other);
             }
         }
     }

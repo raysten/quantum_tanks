@@ -626,7 +626,7 @@ namespace Quantum {
     }
   }
   public unsafe partial interface ISignalOnCollisionBulletHitTank : ISignal {
-    void OnCollisionBulletHitTank(Frame f, TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank);
+    void OnCollisionBulletHitTank(Frame f, TriggerInfo3D collisionInfo, Bullet* bullet, TankRotator* tank);
   }
   public unsafe partial interface ISignalShoot : ISignal {
     void Shoot(Frame f, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype);
@@ -723,7 +723,7 @@ namespace Quantum {
       Physics3D.Init(_globals->PhysicsState3D.MapStaticCollidersState.TrackedMap);
     }
     public unsafe partial struct FrameSignals {
-      public void OnCollisionBulletHitTank(TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank) {
+      public void OnCollisionBulletHitTank(TriggerInfo3D collisionInfo, Bullet* bullet, TankRotator* tank) {
         var array = _f._ISignalOnCollisionBulletHitTankSystems;
         for (Int32 i = 0; i < array.Length; ++i) {
           var s = array[i];
