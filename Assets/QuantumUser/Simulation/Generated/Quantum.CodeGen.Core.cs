@@ -575,20 +575,24 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct Tank : Quantum.IComponent {
-    public const Int32 SIZE = 8;
+    public const Int32 SIZE = 16;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
     public AssetRef<EntityPrototype> RotatorPrototype;
+    [FieldOffset(8)]
+    public EntityRef TankRotator;
     public override Int32 GetHashCode() {
       unchecked { 
         var hash = 16087;
         hash = hash * 31 + RotatorPrototype.GetHashCode();
+        hash = hash * 31 + TankRotator.GetHashCode();
         return hash;
       }
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (Tank*)ptr;
         AssetRef.Serialize(&p->RotatorPrototype, serializer);
+        EntityRef.Serialize(&p->TankRotator, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -626,7 +630,7 @@ namespace Quantum {
     }
   }
   public unsafe partial interface ISignalOnCollisionBulletHitTank : ISignal {
-    void OnCollisionBulletHitTank(Frame f, TriggerInfo3D collisionInfo, Bullet* bullet, TankRotator* tank);
+    void OnCollisionBulletHitTank(Frame f, TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank);
   }
   public unsafe partial interface ISignalShoot : ISignal {
     void Shoot(Frame f, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype);
@@ -723,7 +727,7 @@ namespace Quantum {
       Physics3D.Init(_globals->PhysicsState3D.MapStaticCollidersState.TrackedMap);
     }
     public unsafe partial struct FrameSignals {
-      public void OnCollisionBulletHitTank(TriggerInfo3D collisionInfo, Bullet* bullet, TankRotator* tank) {
+      public void OnCollisionBulletHitTank(TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank) {
         var array = _f._ISignalOnCollisionBulletHitTankSystems;
         for (Int32 i = 0; i < array.Length; ++i) {
           var s = array[i];

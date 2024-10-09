@@ -45,9 +45,9 @@ namespace Quantum
             body->AddForce(ownerTransform->Up * config.Force);
         }
 
-        public void OnCollisionBulletHitTank(Frame frame, TriggerInfo3D collisionInfo, Bullet* bullet, TankRotator* tankRotator)
+        public void OnCollisionBulletHitTank(Frame frame, TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank)
         {
-            if (bullet->Owner == collisionInfo.Other)
+            if (bullet->Owner == tank->TankRotator)
             {
                 collisionInfo.IgnoreTrigger = true;
             }

@@ -64,6 +64,19 @@ namespace Quantum.Prototypes.Unity {
       return result;
     }
   }
+  [System.SerializableAttribute()]
+  public unsafe partial class TankPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.TankPrototype> {
+    public AssetRef<EntityPrototype> RotatorPrototype;
+    public Quantum.QuantumEntityPrototype TankRotator;
+    partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.TankPrototype prototype);
+    public override Quantum.Prototypes.TankPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
+      var result = new Quantum.Prototypes.TankPrototype();
+      converter.Convert(this.RotatorPrototype, out result.RotatorPrototype);
+      converter.Convert(this.TankRotator, out result.TankRotator);
+      ConvertUser(converter, ref result);
+      return result;
+    }
+  }
 }
 #pragma warning restore 0109
 #pragma warning restore 1591

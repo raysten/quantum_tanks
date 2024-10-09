@@ -19,6 +19,8 @@ namespace Quantum
                 var rotatorPrototypeAsset = tank->RotatorPrototype;
                 var rotatorEntity = frame.Create(rotatorPrototypeAsset);
                 frame.Add(rotatorEntity, playerLink);
+
+                tank->TankRotator = rotatorEntity;
             }
         }
     }

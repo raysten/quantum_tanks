@@ -9,9 +9,9 @@ namespace Quantum
         {
             if (frame.Unsafe.TryGetPointer<Bullet>(info.Entity, out var bullet))
             {
-                if (frame.Unsafe.TryGetPointer<TankRotator>(info.Other, out var tankRotator))
+                if (frame.Unsafe.TryGetPointer<Tank>(info.Other, out var tank))
                 {
-                    frame.Signals.OnCollisionBulletHitTank(info, bullet, tankRotator);
+                    frame.Signals.OnCollisionBulletHitTank(info, bullet, tank);
                 }
             }
         }

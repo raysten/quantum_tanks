@@ -101,9 +101,9 @@ namespace Quantum.Prototypes {
   }
   [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.Tank))]
-  public unsafe partial class TankPrototype : ComponentPrototype<Quantum.Tank> {
+  public unsafe class TankPrototype : ComponentPrototype<Quantum.Tank> {
     public AssetRef<EntityPrototype> RotatorPrototype;
-    partial void MaterializeUser(Frame frame, ref Quantum.Tank result, in PrototypeMaterializationContext context);
+    public MapEntityId TankRotator;
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.Tank component = default;
         Materialize((Frame)f, ref component, in context);
@@ -111,7 +111,7 @@ namespace Quantum.Prototypes {
     }
     public void Materialize(Frame frame, ref Quantum.Tank result, in PrototypeMaterializationContext context = default) {
         result.RotatorPrototype = this.RotatorPrototype;
-        MaterializeUser(frame, ref result, in context);
+        PrototypeValidator.FindMapEntity(this.TankRotator, in context, out result.TankRotator);
     }
   }
   [System.SerializableAttribute()]
