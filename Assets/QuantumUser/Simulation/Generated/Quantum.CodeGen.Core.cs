@@ -613,19 +613,23 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct TankRotator : Quantum.IComponent {
-    public const Int32 SIZE = 8;
+    public const Int32 SIZE = 16;
     public const Int32 ALIGNMENT = 8;
-    [FieldOffset(0)]
+    [FieldOffset(8)]
     public FP FireInterval;
+    [FieldOffset(0)]
+    public Int32 Score;
     public override Int32 GetHashCode() {
       unchecked { 
         var hash = 16339;
         hash = hash * 31 + FireInterval.GetHashCode();
+        hash = hash * 31 + Score.GetHashCode();
         return hash;
       }
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (TankRotator*)ptr;
+        serializer.Stream.Serialize(&p->Score);
         FP.Serialize(&p->FireInterval, serializer);
     }
   }

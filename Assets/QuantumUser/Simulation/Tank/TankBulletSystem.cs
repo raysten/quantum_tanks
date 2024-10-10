@@ -45,6 +45,7 @@ namespace Quantum
             body->AddForce(ownerTransform->Up * config.Force);
         }
 
+        // @todo: move to another system
         public void OnCollisionBulletHitTank(Frame frame, TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank)
         {
             if (bullet->Owner == tank->TankRotator)
@@ -53,7 +54,8 @@ namespace Quantum
             }
             else
             {
-                // @todo: change score
+                var tankRotator = frame.Unsafe.GetPointer<TankRotator>(bullet->Owner);
+                tankRotator->Score++;
             }
         }
     }

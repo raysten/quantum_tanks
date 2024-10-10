@@ -133,6 +133,7 @@ namespace Quantum.Prototypes {
   [Quantum.Prototypes.Prototype(typeof(Quantum.TankRotator))]
   public unsafe partial class TankRotatorPrototype : ComponentPrototype<Quantum.TankRotator> {
     public FP FireInterval;
+    public Int32 Score;
     partial void MaterializeUser(Frame frame, ref Quantum.TankRotator result, in PrototypeMaterializationContext context);
     public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
         Quantum.TankRotator component = default;
@@ -141,6 +142,7 @@ namespace Quantum.Prototypes {
     }
     public void Materialize(Frame frame, ref Quantum.TankRotator result, in PrototypeMaterializationContext context = default) {
         result.FireInterval = this.FireInterval;
+        result.Score = this.Score;
         MaterializeUser(frame, ref result, in context);
     }
   }
