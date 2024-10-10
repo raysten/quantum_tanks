@@ -1,23 +1,25 @@
 ﻿using Quantum;
 using TMPro;
+using UnityEngine;
 
 namespace QuantumUser.View
 {
     public class TanksGameView : QuantumSceneViewComponent
     {
-        public TMP_Text ScoreBoard;
+        [SerializeField]
+        private TMP_Text _scoreText;
 
         public override void OnUpdateView()
         {
-            if (ScoreBoard != null)
+            if (_scoreText != null)
             {
-                ScoreBoard.text = "<b>Score</b>\n";
-                var shipsFilter = VerifiedFrame.Filter<PlayerLink, TankRotator>();
+                _scoreText.text = string.Empty;
+                var tanksFilter = VerifiedFrame.Filter<PlayerLink, TankRotator>();
 
-                while (shipsFilter.Next(out var entity, out var playerLink, out var tankRotator))
+                while (tanksFilter.Next(out var entity, out var playerLink, out var tankRotator))
                 {
                     var playerName = VerifiedFrame.GetPlayerData(playerLink.PlayerRef).PlayerNickname;
-                    ScoreBoard.text += $"{playerName}: {tankRotator.Score}  \n";
+                    _scoreText.text += $"{playerName}: {tankRotator.Score}  \n";
                 }
             }
         }
