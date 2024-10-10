@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace QuantumUser.View
 {
-    public class TanksGameView : QuantumSceneViewComponent
+    public class ScoreView : QuantumSceneViewComponent
     {
         [SerializeField]
         private TMP_Text _scoreText;
