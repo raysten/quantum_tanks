@@ -125,6 +125,62 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct BitSet2 {
+    public const Int32 SIZE = 8;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(0)]
+    public fixed UInt64 Bits[1];
+    public const Int32 BitsSize = 2;
+    public Int32 Length {
+      get {
+        return 2;
+      }
+    }
+    public static void Print(void* ptr, FramePrinter printer) {
+      var p = (BitSet2*)ptr;
+      printer.ScopeBegin();
+      UnmanagedUtils.PrintBytesBits((byte*)&p->Bits, 2, 64, printer);
+      printer.ScopeEnd();
+    }
+    public static BitSet2 FromArray(UInt64[] values) {
+      Assert.Always(1 == values.Length, "Invalid array size", values.Length);
+      BitSet2 result = default;
+      for (int i = 0; i < 1; ++i) {
+        result.Bits[i] = values[i];
+      }
+      return result;
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Set(Int32 bit) {
+      Assert.Check(bit >= 0 && bit < 2);
+      fixed (UInt64* p = Bits) (p[bit/64]) |= (1UL<<(bit%64));
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Clear(Int32 bit) {
+      Assert.Check(bit >= 0 && bit < 2);
+      fixed (UInt64* p = Bits) (p[bit/64]) &= ~(1UL<<(bit%64));
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearAll() {
+      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Boolean IsSet(Int32 bit) {
+      fixed (UInt64* p = Bits) return ((p[bit/64])&(1UL<<(bit%64))) != 0UL;
+    }
+    public override Int32 GetHashCode() {
+      unchecked { 
+        var hash = 13619;
+        fixed (UInt64* p = Bits) hash = hash * 31 + HashCodeUtils.GetArrayHashCode(p, 1);
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (BitSet2*)ptr;
+        serializer.Stream.SerializeBuffer(&p->Bits[0], 1);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct BitSet2048 {
     public const Int32 SIZE = 256;
     public const Int32 ALIGNMENT = 8;
@@ -349,62 +405,6 @@ namespace Quantum {
     }
   }
   [StructLayout(LayoutKind.Explicit)]
-  public unsafe partial struct BitSet6 {
-    public const Int32 SIZE = 8;
-    public const Int32 ALIGNMENT = 8;
-    [FieldOffset(0)]
-    public fixed UInt64 Bits[1];
-    public const Int32 BitsSize = 6;
-    public Int32 Length {
-      get {
-        return 6;
-      }
-    }
-    public static void Print(void* ptr, FramePrinter printer) {
-      var p = (BitSet6*)ptr;
-      printer.ScopeBegin();
-      UnmanagedUtils.PrintBytesBits((byte*)&p->Bits, 6, 64, printer);
-      printer.ScopeEnd();
-    }
-    public static BitSet6 FromArray(UInt64[] values) {
-      Assert.Always(1 == values.Length, "Invalid array size", values.Length);
-      BitSet6 result = default;
-      for (int i = 0; i < 1; ++i) {
-        result.Bits[i] = values[i];
-      }
-      return result;
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Set(Int32 bit) {
-      Assert.Check(bit >= 0 && bit < 6);
-      fixed (UInt64* p = Bits) (p[bit/64]) |= (1UL<<(bit%64));
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Clear(Int32 bit) {
-      Assert.Check(bit >= 0 && bit < 6);
-      fixed (UInt64* p = Bits) (p[bit/64]) &= ~(1UL<<(bit%64));
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearAll() {
-      fixed (UInt64* p = Bits) Native.Utils.Clear(p, 8);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Boolean IsSet(Int32 bit) {
-      fixed (UInt64* p = Bits) return ((p[bit/64])&(1UL<<(bit%64))) != 0UL;
-    }
-    public override Int32 GetHashCode() {
-      unchecked { 
-        var hash = 13669;
-        fixed (UInt64* p = Bits) hash = hash * 31 + HashCodeUtils.GetArrayHashCode(p, 1);
-        return hash;
-      }
-    }
-    public static void Serialize(void* ptr, FrameSerializer serializer) {
-        var p = (BitSet6*)ptr;
-        serializer.Stream.SerializeBuffer(&p->Bits[0], 1);
-    }
-  }
-  [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct Input {
     public const Int32 SIZE = 60;
     public const Int32 ALIGNMENT = 4;
@@ -430,7 +430,7 @@ namespace Quantum {
       }
     }
     static partial void GetMaxCountCodeGen(ref int maxCount) {
-      maxCount = 6;
+      maxCount = 2;
     }
     public Boolean IsDown(InputButtons button) {
       switch (button) {
@@ -463,7 +463,7 @@ namespace Quantum {
   }
   [StructLayout(LayoutKind.Explicit)]
   public unsafe partial struct _globals_ {
-    public const Int32 SIZE = 920;
+    public const Int32 SIZE = 680;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
     public AssetRef<Map> Map;
@@ -486,13 +486,13 @@ namespace Quantum {
     [FieldOffset(544)]
     public Int32 PlayerConnectedCount;
     [FieldOffset(548)]
-    [FramePrinter.FixedArrayAttribute(typeof(Input), 6)]
-    private fixed Byte _input_[360];
-    [FieldOffset(912)]
-    public BitSet6 PlayerLastConnectionState;
+    [FramePrinter.FixedArrayAttribute(typeof(Input), 2)]
+    private fixed Byte _input_[120];
+    [FieldOffset(672)]
+    public BitSet2 PlayerLastConnectionState;
     public FixedArray<Input> input {
       get {
-        fixed (byte* p = _input_) { return new FixedArray<Input>(p, 60, 6); }
+        fixed (byte* p = _input_) { return new FixedArray<Input>(p, 60, 2); }
       }
     }
     public override Int32 GetHashCode() {
@@ -526,7 +526,7 @@ namespace Quantum {
         PhysicsSceneSettings.Serialize(&p->PhysicsSettings, serializer);
         serializer.Stream.Serialize(&p->PlayerConnectedCount);
         FixedArray.Serialize(p->input, serializer, Statics.SerializeInput);
-        Quantum.BitSet6.Serialize(&p->PlayerLastConnectionState, serializer);
+        Quantum.BitSet2.Serialize(&p->PlayerLastConnectionState, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -636,6 +636,7 @@ namespace Quantum {
     void Shoot(Frame f, EntityRef owner, FPVector3 spawnPosition, AssetRef<EntityPrototype> bulletPrototype);
   }
   public static unsafe partial class Constants {
+    public const Int32 PLAYER_COUNT = 2;
   }
   public unsafe partial class Frame {
     private ISignalOnCollisionBulletHitTank[] _ISignalOnCollisionBulletHitTankSystems;
@@ -757,11 +758,11 @@ namespace Quantum {
       typeRegistry.Register(typeof(AssetRef), AssetRef.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet1024), Quantum.BitSet1024.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet128), Quantum.BitSet128.SIZE);
+      typeRegistry.Register(typeof(Quantum.BitSet2), Quantum.BitSet2.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet2048), Quantum.BitSet2048.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet256), Quantum.BitSet256.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet4096), Quantum.BitSet4096.SIZE);
       typeRegistry.Register(typeof(Quantum.BitSet512), Quantum.BitSet512.SIZE);
-      typeRegistry.Register(typeof(Quantum.BitSet6), Quantum.BitSet6.SIZE);
       typeRegistry.Register(typeof(Quantum.Bullet), Quantum.Bullet.SIZE);
       typeRegistry.Register(typeof(Button), Button.SIZE);
       typeRegistry.Register(typeof(CallbackFlags), 4);
