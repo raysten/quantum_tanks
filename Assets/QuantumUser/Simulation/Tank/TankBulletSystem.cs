@@ -56,7 +56,6 @@ namespace Quantum
             {
                 var tankRotator = frame.Unsafe.GetPointer<TankRotator>(bullet->Owner);
                 tankRotator->Score++;
-                Debug.LogError($"rotator: {frame.Get<TankRotator>(bullet->Owner)}, score: {tankRotator->Score}");
             }
         }
     }
