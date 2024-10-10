@@ -13,7 +13,8 @@ namespace Quantum
             public TankRotator* Rotator;
         }
 
-        private FP _rotationSpeed = FP._2;
+        private static readonly FP _rotationSpeed = FP._2;
+        private static readonly int _maxRotation = 60;
 
         public override void Update(Frame frame, ref Filter filter)
         {
@@ -33,13 +34,20 @@ namespace Quantum
         {
             if (input->Up)
             {
-                filter.Transform->Rotate(0, 0, _rotationSpeed);
+                Rotate(filter, 1);
             }
             
             if (input->Down)
             {
-                filter.Transform->Rotate(0, 0, _rotationSpeed * -1);
+                Rotate(filter, -1);
             }
+        }
+
+        private void Rotate(Filter filter, int direction)
+        {
+            var rotationAroundZ = filter.Transform->EulerAngles.Z;
+            var newRotationAroundZ = FPMath.Clamp(rotationAroundZ + _rotationSpeed * direction, -_maxRotation, _maxRotation);
+            filter.Transform->Rotation = FPQuaternion.Euler(0, 0, newRotationAroundZ);
         }
 
         private void UpdateShooting(Frame frame, Filter filter, Input* input)
