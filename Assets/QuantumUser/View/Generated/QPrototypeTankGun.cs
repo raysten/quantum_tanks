@@ -14,14 +14,14 @@ namespace Quantum {
   using UnityEngine;
   
   [UnityEngine.DisallowMultipleComponent()]
-  public unsafe partial class QPrototypeTankRotator : QuantumUnityComponentPrototype<Quantum.Prototypes.TankRotatorPrototype>, IQuantumUnityPrototypeWrapperForComponent<Quantum.TankRotator> {
-    partial void CreatePrototypeUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.TankRotatorPrototype prototype);
+  public unsafe partial class QPrototypeTankGun : QuantumUnityComponentPrototype<Quantum.Prototypes.TankGunPrototype>, IQuantumUnityPrototypeWrapperForComponent<Quantum.TankGun> {
+    partial void CreatePrototypeUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.TankGunPrototype prototype);
     [DrawInline()]
     [ReadOnly(InEditMode = false)]
-    public Quantum.Prototypes.TankRotatorPrototype Prototype;
+    public Quantum.Prototypes.TankGunPrototype Prototype;
     public override System.Type ComponentType {
       get {
-        return typeof(Quantum.TankRotator);
+        return typeof(Quantum.TankGun);
       }
     }
     public override ComponentPrototype CreatePrototype(Quantum.QuantumEntityPrototypeConverter converter) {

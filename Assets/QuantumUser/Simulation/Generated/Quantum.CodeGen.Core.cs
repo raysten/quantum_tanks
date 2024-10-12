@@ -578,21 +578,43 @@ namespace Quantum {
     public const Int32 SIZE = 16;
     public const Int32 ALIGNMENT = 8;
     [FieldOffset(0)]
-    public AssetRef<EntityPrototype> RotatorPrototype;
+    public AssetRef<EntityPrototype> GunPrototype;
     [FieldOffset(8)]
-    public EntityRef TankRotator;
+    public EntityRef TankGun;
     public override Int32 GetHashCode() {
       unchecked { 
         var hash = 16087;
-        hash = hash * 31 + RotatorPrototype.GetHashCode();
-        hash = hash * 31 + TankRotator.GetHashCode();
+        hash = hash * 31 + GunPrototype.GetHashCode();
+        hash = hash * 31 + TankGun.GetHashCode();
         return hash;
       }
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (Tank*)ptr;
-        AssetRef.Serialize(&p->RotatorPrototype, serializer);
-        EntityRef.Serialize(&p->TankRotator, serializer);
+        AssetRef.Serialize(&p->GunPrototype, serializer);
+        EntityRef.Serialize(&p->TankGun, serializer);
+    }
+  }
+  [StructLayout(LayoutKind.Explicit)]
+  public unsafe partial struct TankGun : Quantum.IComponent {
+    public const Int32 SIZE = 16;
+    public const Int32 ALIGNMENT = 8;
+    [FieldOffset(8)]
+    public FP FireInterval;
+    [FieldOffset(0)]
+    public Int32 Score;
+    public override Int32 GetHashCode() {
+      unchecked { 
+        var hash = 18329;
+        hash = hash * 31 + FireInterval.GetHashCode();
+        hash = hash * 31 + Score.GetHashCode();
+        return hash;
+      }
+    }
+    public static void Serialize(void* ptr, FrameSerializer serializer) {
+        var p = (TankGun*)ptr;
+        serializer.Stream.Serialize(&p->Score);
+        FP.Serialize(&p->FireInterval, serializer);
     }
   }
   [StructLayout(LayoutKind.Explicit)]
@@ -609,28 +631,6 @@ namespace Quantum {
     }
     public static void Serialize(void* ptr, FrameSerializer serializer) {
         var p = (TankMovement*)ptr;
-    }
-  }
-  [StructLayout(LayoutKind.Explicit)]
-  public unsafe partial struct TankRotator : Quantum.IComponent {
-    public const Int32 SIZE = 16;
-    public const Int32 ALIGNMENT = 8;
-    [FieldOffset(8)]
-    public FP FireInterval;
-    [FieldOffset(0)]
-    public Int32 Score;
-    public override Int32 GetHashCode() {
-      unchecked { 
-        var hash = 16339;
-        hash = hash * 31 + FireInterval.GetHashCode();
-        hash = hash * 31 + Score.GetHashCode();
-        return hash;
-      }
-    }
-    public static void Serialize(void* ptr, FrameSerializer serializer) {
-        var p = (TankRotator*)ptr;
-        serializer.Stream.Serialize(&p->Score);
-        FP.Serialize(&p->FireInterval, serializer);
     }
   }
   public unsafe partial interface ISignalOnCollisionBulletHitTank : ISignal {
@@ -696,10 +696,10 @@ namespace Quantum {
       BuildSignalsArrayOnComponentRemoved<Quantum.PlayerLink>();
       BuildSignalsArrayOnComponentAdded<Quantum.Tank>();
       BuildSignalsArrayOnComponentRemoved<Quantum.Tank>();
+      BuildSignalsArrayOnComponentAdded<Quantum.TankGun>();
+      BuildSignalsArrayOnComponentRemoved<Quantum.TankGun>();
       BuildSignalsArrayOnComponentAdded<Quantum.TankMovement>();
       BuildSignalsArrayOnComponentRemoved<Quantum.TankMovement>();
-      BuildSignalsArrayOnComponentAdded<Quantum.TankRotator>();
-      BuildSignalsArrayOnComponentRemoved<Quantum.TankRotator>();
       BuildSignalsArrayOnComponentAdded<Transform2D>();
       BuildSignalsArrayOnComponentRemoved<Transform2D>();
       BuildSignalsArrayOnComponentAdded<Transform2DVertical>();
@@ -833,8 +833,8 @@ namespace Quantum {
       typeRegistry.Register(typeof(SpringJoint), SpringJoint.SIZE);
       typeRegistry.Register(typeof(SpringJoint3D), SpringJoint3D.SIZE);
       typeRegistry.Register(typeof(Quantum.Tank), Quantum.Tank.SIZE);
+      typeRegistry.Register(typeof(Quantum.TankGun), Quantum.TankGun.SIZE);
       typeRegistry.Register(typeof(Quantum.TankMovement), Quantum.TankMovement.SIZE);
-      typeRegistry.Register(typeof(Quantum.TankRotator), Quantum.TankRotator.SIZE);
       typeRegistry.Register(typeof(Transform2D), Transform2D.SIZE);
       typeRegistry.Register(typeof(Transform2DVertical), Transform2DVertical.SIZE);
       typeRegistry.Register(typeof(Transform3D), Transform3D.SIZE);
@@ -847,8 +847,8 @@ namespace Quantum {
         .Add<Quantum.Bullet>(Quantum.Bullet.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.PlayerLink>(Quantum.PlayerLink.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.Tank>(Quantum.Tank.Serialize, null, null, ComponentFlags.None)
+        .Add<Quantum.TankGun>(Quantum.TankGun.Serialize, null, null, ComponentFlags.None)
         .Add<Quantum.TankMovement>(Quantum.TankMovement.Serialize, null, null, ComponentFlags.None)
-        .Add<Quantum.TankRotator>(Quantum.TankRotator.Serialize, null, null, ComponentFlags.None)
         .Finish();
     }
     [Preserve()]

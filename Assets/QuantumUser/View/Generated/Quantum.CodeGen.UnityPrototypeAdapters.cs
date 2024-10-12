@@ -66,13 +66,13 @@ namespace Quantum.Prototypes.Unity {
   }
   [System.SerializableAttribute()]
   public unsafe partial class TankPrototype : Quantum.QuantumUnityPrototypeAdapter<Quantum.Prototypes.TankPrototype> {
-    public AssetRef<EntityPrototype> RotatorPrototype;
-    public Quantum.QuantumEntityPrototype TankRotator;
+    public AssetRef<EntityPrototype> GunPrototype;
+    public Quantum.QuantumEntityPrototype TankGun;
     partial void ConvertUser(Quantum.QuantumEntityPrototypeConverter converter, ref Quantum.Prototypes.TankPrototype prototype);
     public override Quantum.Prototypes.TankPrototype Convert(Quantum.QuantumEntityPrototypeConverter converter) {
       var result = new Quantum.Prototypes.TankPrototype();
-      converter.Convert(this.RotatorPrototype, out result.RotatorPrototype);
-      converter.Convert(this.TankRotator, out result.TankRotator);
+      converter.Convert(this.GunPrototype, out result.GunPrototype);
+      converter.Convert(this.TankGun, out result.TankGun);
       ConvertUser(converter, ref result);
       return result;
     }

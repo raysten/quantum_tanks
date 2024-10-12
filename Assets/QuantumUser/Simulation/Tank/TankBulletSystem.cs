@@ -48,14 +48,14 @@ namespace Quantum
         // @todo: move to another system
         public void OnCollisionBulletHitTank(Frame frame, TriggerInfo3D collisionInfo, Bullet* bullet, Tank* tank)
         {
-            if (bullet->Owner == tank->TankRotator)
+            if (bullet->Owner == tank->TankGun)
             {
                 collisionInfo.IgnoreTrigger = true;
             }
             else
             {
-                var tankRotator = frame.Unsafe.GetPointer<TankRotator>(bullet->Owner);
-                tankRotator->Score++;
+                var tankGun = frame.Unsafe.GetPointer<TankGun>(bullet->Owner);
+                tankGun->Score++;
             }
         }
     }

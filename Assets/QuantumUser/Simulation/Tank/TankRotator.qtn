@@ -1,4 +1,4 @@
-component TankRotator
+component TankGun
 {
     FP FireInterval;
     Int32 Score;

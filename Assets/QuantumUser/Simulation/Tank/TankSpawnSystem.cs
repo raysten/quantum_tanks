@@ -19,17 +19,17 @@ namespace Quantum
             
             if (frame.Unsafe.TryGetPointer(tankEntity, out Tank* tank))
             {
-                var rotatorPrototypeAsset = tank->RotatorPrototype;
-                var rotatorEntity = frame.Create(rotatorPrototypeAsset);
-                frame.Add(rotatorEntity, playerLink);
+                var gunPrototypeAsset = tank->GunPrototype;
+                var gunEntity = frame.Create(gunPrototypeAsset);
+                frame.Add(gunEntity, playerLink);
 
-                tank->TankRotator = rotatorEntity;
+                tank->TankGun = gunEntity;
             }
             
-            AssignInitialPosition(frame, player, tankEntity, tank->TankRotator);
+            AssignInitialPosition(frame, player, tankEntity, tank->TankGun);
         }
 
-        private void AssignInitialPosition(Frame frame, PlayerRef player, EntityRef tankEntity, EntityRef rotatorEntity)
+        private void AssignInitialPosition(Frame frame, PlayerRef player, EntityRef tankEntity, EntityRef gunEntity)
         {
             var xPosition = CalculateXPosition(player);
             
@@ -38,9 +38,9 @@ namespace Quantum
                 tankTransform->Position = new FPVector3(xPosition, 0, 0);
             }
             
-            if (frame.Unsafe.TryGetPointer<Transform3D>(rotatorEntity, out var rotatorTransform))
+            if (frame.Unsafe.TryGetPointer<Transform3D>(gunEntity, out var gunTransform))
             {
-                rotatorTransform->Position = new FPVector3(xPosition, -FP._0_10, 0);
+                gunTransform->Position = new FPVector3(xPosition, -FP._0_10, 0);
             }
         }
 

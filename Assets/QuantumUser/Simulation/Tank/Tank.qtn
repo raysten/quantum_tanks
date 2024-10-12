@@ -1,5 +1,5 @@
 component Tank
 {
-    AssetRef<EntityPrototype> RotatorPrototype;
-    EntityRef TankRotator;
+    AssetRef<EntityPrototype> GunPrototype;
+    EntityRef TankGun;
 }

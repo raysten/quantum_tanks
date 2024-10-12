@@ -10,7 +10,7 @@ namespace Quantum
         {
             public EntityRef Entity;
             public Transform3D* Transform;
-            public TankRotator* Rotator;
+            public TankGun* Gun;
         }
 
         private static readonly FP _rotationSpeed = FP._2;
@@ -54,17 +54,16 @@ namespace Quantum
         {
             var tankConfig = frame.FindAsset(frame.RuntimeConfig.TankConfig);
 
-            if (input->Fire && filter.Rotator->FireInterval <= 0)
+            if (input->Fire && filter.Gun->FireInterval <= 0)
             {
-                // @todo: rename rotator to gun?
-                filter.Rotator->FireInterval = tankConfig.FireInterval;
+                filter.Gun->FireInterval = tankConfig.FireInterval;
                 var relativeOffset = FPVector3.Up * tankConfig.ShootingOffset;
                 var spawnPosition = filter.Transform->TransformPoint(relativeOffset);
                 frame.Signals.Shoot(filter.Entity, spawnPosition, tankConfig.BulletPrototype);
             }
             else
             {
-                filter.Rotator->FireInterval -= frame.DeltaTime;
+                filter.Gun->FireInterval -= frame.DeltaTime;
             }
         }
     }
