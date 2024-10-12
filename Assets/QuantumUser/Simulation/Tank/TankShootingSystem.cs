@@ -8,13 +8,7 @@ namespace Quantum
     {
         public override void Update(Frame frame, ref GunFilter filter)
         {
-            Input* input = default;
-
-            if (frame.Unsafe.TryGetPointer(filter.Entity, out PlayerLink* playerLink))
-            {
-                input = frame.GetPlayerInput(playerLink->PlayerRef);
-            }
-            
+            var input = TankUtility.RetrievePlayerInput(frame, filter.Entity);
             UpdateShooting(frame, filter, input);
         }
         

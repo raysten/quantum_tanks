@@ -15,13 +15,7 @@ namespace Quantum
 
         public override void Update(Frame frame, ref Filter filter)
         {
-            Input* input = default;
-
-            if (frame.Unsafe.TryGetPointer(filter.Entity, out PlayerLink* playerLink))
-            {
-                input = frame.GetPlayerInput(playerLink->PlayerRef);
-            }
-
+            var input = TankUtility.RetrievePlayerInput(frame, filter.Entity);
             UpdateMovement(frame, filter, input);
         }
 
